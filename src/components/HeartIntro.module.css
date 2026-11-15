@@ -1,0 +1,46 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.heart {
+  width: min(62vw, 300px);
+  height: auto;
+  overflow: visible;
+}
+
+.stroke {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.fill {
+  fill: var(--accent-soft);
+  fill-opacity: 0.45;
+}
+
+.date {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: lining-nums;
+  text-anchor: middle;
+  fill: var(--text);
+}
+
+.skip {
+  position: absolute;
+  bottom: max(2rem, env(safe-area-inset-bottom));
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}

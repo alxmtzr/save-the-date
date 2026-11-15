@@ -1,0 +1,45 @@
+:root {
+  --bg: #faf6f0;
+  --text: #2e2622;
+  --muted: #8a7d74;
+  --accent: #c8754f;
+  --accent-strong: #b5643f;
+  --accent-soft: #ebc3a2;
+  --sage: #8a9277;
+  --line: rgb(46 38 34 / 0.1);
+  --line-strong: rgb(200 117 79 / 0.45);
+
+  --font-serif: 'Cormorant Garamond Variable', 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter Variable', Inter, system-ui, -apple-system, sans-serif;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgb(235 195 162 / 0.25), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  font-variant-numeric: lining-nums;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
