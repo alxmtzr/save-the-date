@@ -29,7 +29,12 @@ export function HeartIntro({ onDone }: { onDone: () => void }) {
           scale: [0.97, 1, 1, 1.035, 1],
           rotate: [-1.5, 0, 0, 0.4, 0],
         }}
-        exit={{ scale: 1.18, opacity: 0, filter: 'blur(6px)' }}
+        exit={{
+          scale: 1.18,
+          opacity: 0,
+          filter: 'blur(6px)',
+          transition: { duration: 0.75, ease: 'easeInOut' },
+        }}
         transition={{
           duration: 3.1,
           times: [0, 0.55, 0.72, 0.86, 1],

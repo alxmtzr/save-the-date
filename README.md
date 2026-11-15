@@ -38,7 +38,7 @@ Automatically generated at build time with the configured names and date:
 - **Smooth Rolling Countdown:** Live days, hours, minutes, and seconds counter aligned to exact second boundaries.
 - **One-Click Calendar Integration:** Supports **Apple Calendar**, **Google Calendar**, **Outlook**, and a standards-compliant **RFC 5545 `.ics` download** (`save-the-date.ics` with 7-day `VALARM` reminder) generated at build time.
 - **Automatic Open Graph Card:** Dynamically generates a `1200 × 630` JPEG preview card (`og-image.jpg`) and Open Graph `<meta>` tags from `wedding.config.ts` so links shared in WhatsApp, iMessage, or Signal display a clean calligraphy card while keeping the couple photo as a surprise.
-- **Multi-Device Headless UI Test Suite:** Automated real-browser tests across 16 mobile, foldable, tablet, and laptop viewports (`320×568` up to `1920×1080`).
+- **Multi-Device Headless UI Test Suite:** Automated real-browser tests across 37 Android, iPhone, foldable, tablet, laptop, and monitor viewports (`320×568` up to `2560×1440`), plus full end-to-end checks for the calligraphic intro animation, live countdown, and calendar integrations.
 - **Privacy-Friendly & Self-Hosted Fonts:** Bundled locally via `@fontsource-variable` (`Cormorant Garamond` & `Inter`) with zero external requests to Google Fonts, plus `noindex, nofollow` meta tags.
 
 ---
@@ -95,8 +95,8 @@ export default defineWedding({
 npm install
 npm run dev              # start local dev server at http://localhost:5173/
 npm run dev -- --host    # expose dev server on local Wi-Fi (for testing on iPhone / Android)
-npm test                 # run unit tests + 16-viewport headless Chrome UI suite
-npm run test:ui:headed   # watch the 16-viewport UI test suite live in a visible Chrome window
+npm test                 # run unit tests + 37-device headless Chrome UI & functional suite
+npm run test:ui:headed   # watch the 37-device UI test suite live in a clean Chrome test window
 npm run lint             # run Oxlint
 npm run build            # typecheck & build production bundle into dist/
 npm run preview          # preview production build locally at http://localhost:4173/
