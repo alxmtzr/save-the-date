@@ -103,8 +103,12 @@ class CdpSession {
   }
 
   close(): void {
-    this.ws.close()
+    this.ws?.close()
   }
+}
+
+function findChromeBinary(): string {
+  return process.env.CHROME_PATH || 'google-chrome'
 }
 
 describe('End-to-End Functional & Multi-Device UI Suite', () => {
@@ -123,11 +127,17 @@ describe('End-to-End Functional & Multi-Device UI Suite', () => {
 
     const debugPort = 9600 + Math.floor(Math.random() * 300)
     userDataDir = `/tmp/std-vitest-cdp-${debugPort}`
+    let stderrLog = ''
     chrome = spawn(
-      'google-chrome',
+      findChromeBinary(),
       [
-        ...(isHeaded ? ['--new-window', '--window-size=1280,960'] : ['--headless=new', '--disable-gpu']),
+        ...(isHeaded
+          ? ['--new-window', '--window-size=1280,960']
+          : ['--headless=new', '--disable-gpu', '--disable-software-rasterizer']),
         '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-breakpad',
         '--no-first-run',
         '--no-default-browser-check',
         '--disable-fre',
@@ -142,29 +152,49 @@ describe('End-to-End Functional & Multi-Device UI Suite', () => {
         '--password-store=basic',
         '--use-mock-keychain',
         '--hide-scrollbars',
+        '--remote-debugging-address=127.0.0.1',
         `--remote-debugging-port=${debugPort}`,
         `--user-data-dir=${userDataDir}`,
         'about:blank',
       ],
-      { stdio: 'ignore' },
+      {
+        stdio: ['ignore', 'ignore', 'pipe'],
+        env: {
+          ...process.env,
+          DBUS_SESSION_BUS_ADDRESS: '/dev/null',
+        },
+      },
     )
+    chrome.stderr?.on('data', (chunk) => {
+      stderrLog += String(chunk)
+    })
 
-    let targets: Array<{ type: string; webSocketDebuggerUrl: string }> = []
-    for (let i = 0; i < 50; i++) {
+    let page: { type: string; webSocketDebuggerUrl: string } | undefined
+    for (let i = 0; i < 150; i++) {
       try {
         const res = await fetch(`http://127.0.0.1:${debugPort}/json`)
-        targets = (await res.json()) as Array<{ type: string; webSocketDebuggerUrl: string }>
-        break
+        if (res.ok) {
+          const targets = (await res.json()) as Array<{ type: string; webSocketDebuggerUrl?: string }>
+          const found = targets.find((t) => t.type === 'page' && t.webSocketDebuggerUrl)
+          if (found?.webSocketDebuggerUrl) {
+            page = { type: found.type, webSocketDebuggerUrl: found.webSocketDebuggerUrl }
+            break
+          }
+        }
       } catch {
-        await sleep(100)
+        // Chrome debugging server not listening yet
       }
+      await sleep(100)
     }
 
-    const page = targets.find((t) => t.type === 'page')!
+    if (!page) {
+      throw new Error(`Chrome DevTools target did not become ready on port ${debugPort}. stderr:\n${stderrLog}`)
+    }
+
     cdp = new CdpSession()
     await cdp.connect(page.webSocketDebuggerUrl)
     await cdp.send('Page.enable')
-  }, 25_000)
+  }, 30_000)
 
   afterAll(async () => {
     cdp?.close()
@@ -353,7 +383,7 @@ describe('End-to-End Functional & Multi-Device UI Suite', () => {
         const timer = document.querySelector('[role="timer"]');
         const units = timer ? Array.from(timer.children) : [];
         const unitValues = units.map(u => {
-          const digits = Array.from(u.children[0].children).map(d => d.textContent?.trim() || '').join('');
+          const digits = Array.from(u.children[0].children).map(d => d.lastElementChild?.textContent?.trim() || '').join('');
           return Number(digits);
         });
         const unitLabels = units.map(u => u.children[1]?.textContent?.trim() || '');
