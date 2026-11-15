@@ -1,34 +1,38 @@
 import { describe, expect, it } from 'vitest'
+import exampleWedding from '../../wedding.config.example.ts'
 import { defineWedding, wedding } from '../config.ts'
 import { buildIcs, googleCalendarUrl, nextDay, outlookCalendarUrl } from './calendar.ts'
 
 const sampleWedding = defineWedding({
-  names: ['Anna', 'Ben'],
-  date: '2028-06-15',
-  countdownTarget: '2028-06-15T00:00:00+02:00',
+  names: ['Emma', 'Noah'],
+  date: '2028-06-17',
+  countdownTarget: '2028-06-17T00:00:00+02:00',
+  image: 'src/assets/sample-couple.jpg',
 })
 
 describe('defineWedding', () => {
   it('derives generic filenames, UIDs, and formatted dates from couple config', () => {
     expect(sampleWedding.icsFileName).toBe('save-the-date.ics')
-    expect(sampleWedding.uid).toBe('anna-ben-20280615@save-the-date')
-    expect(sampleWedding.coupleLabel).toBe('Anna & Ben')
-    expect(sampleWedding.shortDate).toBe('15 · 06 · 28')
-    expect(sampleWedding.longDate).toBe('15. Juni 2028')
+    expect(sampleWedding.uid).toBe('emma-noah-20280617@save-the-date')
+    expect(sampleWedding.coupleLabel).toBe('Emma & Noah')
+    expect(sampleWedding.shortDate).toBe('17 · 06 · 28')
+    expect(sampleWedding.longDate).toBe('17. Juni 2028')
+    expect(exampleWedding.coupleLabel).toBe('Emma & Noah')
   })
 
-  it('validates active wedding configuration in src/config.ts', () => {
+  it('validates active wedding configuration in wedding.config.ts', () => {
     expect(wedding.names).toHaveLength(2)
     expect(wedding.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    expect(wedding.image.length).toBeGreaterThan(0)
     expect(Number.isNaN(Date.parse(wedding.countdownTarget))).toBe(false)
   })
 })
 
 describe('nextDay', () => {
   it('handles month and year boundaries', () => {
-    expect(nextDay('2027-09-25')).toBe('2027-09-26')
-    expect(nextDay('2027-09-30')).toBe('2027-10-01')
-    expect(nextDay('2027-12-31')).toBe('2028-01-01')
+    expect(nextDay('2028-06-17')).toBe('2028-06-18')
+    expect(nextDay('2028-06-30')).toBe('2028-07-01')
+    expect(nextDay('2028-12-31')).toBe('2029-01-01')
   })
 })
 
@@ -37,8 +41,8 @@ describe('googleCalendarUrl', () => {
     const url = new URL(googleCalendarUrl(sampleWedding))
     expect(url.origin).toBe('https://calendar.google.com')
     expect(url.searchParams.get('action')).toBe('TEMPLATE')
-    expect(url.searchParams.get('dates')).toBe('20280615/20280616')
-    expect(url.searchParams.get('text')).toBe('Hochzeit von Anna & Ben')
+    expect(url.searchParams.get('dates')).toBe('20280617/20280618')
+    expect(url.searchParams.get('text')).toBe('Hochzeit von Emma & Noah')
     expect(url.searchParams.has('location')).toBe(false)
   })
 })
@@ -46,8 +50,8 @@ describe('googleCalendarUrl', () => {
 describe('outlookCalendarUrl', () => {
   it('creates an all-day event for the configured date', () => {
     const url = new URL(outlookCalendarUrl(sampleWedding))
-    expect(url.searchParams.get('startdt')).toBe('2028-06-15')
-    expect(url.searchParams.get('enddt')).toBe('2028-06-16')
+    expect(url.searchParams.get('startdt')).toBe('2028-06-17')
+    expect(url.searchParams.get('enddt')).toBe('2028-06-18')
     expect(url.searchParams.get('allday')).toBe('true')
   })
 })
@@ -59,8 +63,8 @@ describe('buildIcs', () => {
   it('uses CRLF line endings and date-only values', () => {
     expect(ics.endsWith('\r\n')).toBe(true)
     expect(ics.replaceAll('\r\n', '')).not.toContain('\n')
-    expect(lines).toContain('DTSTART;VALUE=DATE:20280615')
-    expect(lines).toContain('DTEND;VALUE=DATE:20280616')
+    expect(lines).toContain('DTSTART;VALUE=DATE:20280617')
+    expect(lines).toContain('DTEND;VALUE=DATE:20280618')
     expect(lines).toContain('DTSTAMP:20261115T110000Z')
     expect(lines).toContain(`UID:${sampleWedding.uid}`)
   })

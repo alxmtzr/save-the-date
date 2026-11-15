@@ -1,3 +1,4 @@
+import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import sharp from 'sharp'
 import { defineConfig, type Plugin } from 'vite'
@@ -43,10 +44,17 @@ async function buildOgImage(w: Wedding): Promise<Buffer> {
   return sharp(Buffer.from(svg)).jpeg({ quality: 90, mozjpeg: true }).toBuffer()
 }
 
-/** Injects metadata and emits the .ics and Open Graph image from src/config.ts so nothing is hardcoded. */
+/** Resolves the configured wedding photo and emits HTML metadata, the .ics file, and the Open Graph image. */
 function weddingConfigPlugin(): Plugin {
   return {
     name: 'wedding-config',
+    enforce: 'pre',
+    resolveId(source) {
+      if (source === '@wedding-photo' || source.startsWith('@wedding-photo?')) {
+        const query = source.slice('@wedding-photo'.length)
+        return path.resolve(import.meta.dirname, wedding.image) + query
+      }
+    },
     transformIndexHtml(html) {
       return html
         .replaceAll('__META_TITLE__', escapeXml(wedding.meta.title))
@@ -75,5 +83,5 @@ function weddingConfigPlugin(): Plugin {
 // https://vite.dev/config/
 export default defineConfig({
   base: './',
-  plugins: [react(), imagetools(), weddingConfigPlugin()],
+  plugins: [weddingConfigPlugin(), react(), imagetools()],
 })

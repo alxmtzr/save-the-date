@@ -22,5 +22,6 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "wedding.config.ts", "wedding.config.example.ts"],
+  "exclude": ["src/**/*.test.ts"]
 }

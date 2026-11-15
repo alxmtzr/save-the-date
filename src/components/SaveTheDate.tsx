@@ -1,5 +1,5 @@
 import { m, type Variants } from 'motion/react'
-import couple from '../assets/couple.jpg?w=640;960;1280;1500&format=avif;webp;jpg&as=picture'
+import couple from '@wedding-photo?w=640;960;1280;1500&format=avif;webp;jpg&as=picture'
 import { wedding } from '../config.ts'
 import { AddToCalendar } from './AddToCalendar.tsx'
 import { Countdown } from './Countdown.tsx'

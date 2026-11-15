@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
+    "test:ui:headed": "HEADED=1 vitest run src/lib/ui.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {

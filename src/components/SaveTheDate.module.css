@@ -151,7 +151,7 @@
   }
 
   .content {
-    justify-content: center;
+    justify-content: safe center;
     margin-top: 0;
     padding: 3rem clamp(2rem, 5vw, 5rem);
     overflow-y: auto;
