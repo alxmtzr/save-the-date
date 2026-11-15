@@ -110,7 +110,7 @@ export function HeartIntro({ onDone }: { onDone: () => void }) {
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
-        Tippen zum Überspringen
+        {wedding.t.skipIntro}
       </m.span>
     </m.div>
   )

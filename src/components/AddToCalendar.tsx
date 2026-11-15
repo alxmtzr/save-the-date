@@ -5,12 +5,13 @@ import { googleCalendarUrl, outlookCalendarUrl } from '../lib/calendar.ts'
 import styles from './AddToCalendar.module.css'
 
 const icsHref = `./${wedding.icsFileName}`
+const { calendar: t } = wedding.t
 
 const options = [
-  { label: 'Apple Kalender', href: icsHref, hint: 'iPhone & Mac' },
-  { label: 'Google Kalender', href: googleCalendarUrl(wedding), external: true },
-  { label: 'Outlook', href: outlookCalendarUrl(wedding), external: true },
-  { label: 'Andere (.ics)', href: icsHref, download: wedding.icsFileName },
+  { label: t.apple, href: icsHref, hint: t.appleHint },
+  { label: t.google, href: googleCalendarUrl(wedding), external: true },
+  { label: t.outlook, href: outlookCalendarUrl(wedding), external: true },
+  { label: t.otherIcs, href: icsHref, download: wedding.icsFileName },
 ] as const
 
 export function AddToCalendar() {
@@ -44,7 +45,7 @@ export function AddToCalendar() {
         whileTap={{ scale: 0.97 }}
       >
         <CalendarIcon />
-        In meinen Kalender
+        {t.button}
         <m.svg
           className={styles.chevron}
           width="12"

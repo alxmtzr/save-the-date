@@ -52,7 +52,7 @@ export function SaveTheDate({
 
       <m.section className={styles.content} variants={container} initial="hidden" animate={state}>
         <m.p variants={item} className={styles.eyebrow}>
-          Save the Date
+          {wedding.t.eyebrow}
         </m.p>
 
         <m.h1 variants={item} className={styles.names}>
@@ -65,8 +65,8 @@ export function SaveTheDate({
             type="button"
             className={styles.heartButton}
             onClick={onReplayIntro}
-            aria-label="Herz-Animation noch einmal abspielen"
-            title="Herz-Animation noch einmal abspielen"
+            aria-label={wedding.t.replayIntroAriaLabel}
+            title={wedding.t.replayIntroAriaLabel}
           >
             <svg viewBox="0 0 24 22" width="14" height="13" aria-hidden="true">
               <path d="M12 21s-9-5.6-9-12.1C3 5.6 5.4 3 8.4 3c1.6 0 2.9.8 3.6 2 .7-1.2 2-2 3.6-2 3 0 5.4 2.6 5.4 5.9C21 15.4 12 21 12 21z" />

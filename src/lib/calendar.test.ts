@@ -1,23 +1,68 @@
 import { describe, expect, it } from 'vitest'
-import exampleWedding from '../../wedding.config.example.ts'
-import { defineWedding, wedding } from '../config.ts'
+import templateWedding from '../../wedding.config.template.ts'
+import { defineWedding, registerLocale, wedding } from '../config.ts'
+import { en } from '../i18n/locales.ts'
 import { buildIcs, googleCalendarUrl, nextDay, outlookCalendarUrl } from './calendar.ts'
 
 const sampleWedding = defineWedding({
+  locale: 'de',
   names: ['Emma', 'Noah'],
   date: '2028-06-17',
   countdownTarget: '2028-06-17T00:00:00+02:00',
   image: 'src/assets/sample-couple.jpg',
 })
 
-describe('defineWedding', () => {
-  it('derives generic filenames, UIDs, and formatted dates from couple config', () => {
+describe('defineWedding & i18n', () => {
+  it('derives generic filenames, UIDs, and German formatted dates when locale is "de"', () => {
     expect(sampleWedding.icsFileName).toBe('save-the-date.ics')
     expect(sampleWedding.uid).toBe('emma-noah-20280617@save-the-date')
     expect(sampleWedding.coupleLabel).toBe('Emma & Noah')
     expect(sampleWedding.shortDate).toBe('17 · 06 · 28')
     expect(sampleWedding.longDate).toBe('17. Juni 2028')
-    expect(exampleWedding.coupleLabel).toBe('Emma & Noah')
+    expect(sampleWedding.title).toBe('Hochzeit von Emma & Noah')
+    expect(sampleWedding.locationFallback).toBe('Einladung folgt')
+    expect(templateWedding.coupleLabel).toBe('Emma & Noah')
+  })
+
+  it('localizes dates, UI labels, and calendar defaults when locale is "en"', () => {
+    const englishWedding = defineWedding({
+      locale: 'en',
+      names: ['Emma', 'Noah'],
+      date: '2028-06-17',
+      countdownTarget: '2028-06-17T00:00:00Z',
+      image: 'src/assets/sample-couple.jpg',
+    })
+    expect(englishWedding.t.htmlLang).toBe('en')
+    expect(englishWedding.longDate).toBe('June 17, 2028')
+    expect(englishWedding.title).toBe('Wedding of Emma & Noah')
+    expect(englishWedding.locationFallback).toBe('Invitation to follow')
+    expect(englishWedding.t.countdown.days).toBe('Days')
+    expect(englishWedding.t.countdown.captionHighlight).toBe('I do')
+    expect(englishWedding.t.calendar.button).toBe('Add to calendar')
+    expect(englishWedding.t.skipIntro).toBe('Tap to skip')
+  })
+
+  it('supports extending i18n with custom locales or inline translation overrides', () => {
+    registerLocale('fr', {
+      ...en,
+      htmlLang: 'fr',
+      intlLocale: 'fr-FR',
+      skipIntro: 'Toucher pour passer',
+    })
+    const frenchWedding = defineWedding({
+      locale: 'fr',
+      names: ['Emma', 'Noah'],
+      date: '2028-06-17',
+      countdownTarget: '2028-06-17T00:00:00+02:00',
+      image: 'src/assets/sample-couple.jpg',
+      translations: {
+        calendar: { button: 'Ajouter au calendrier' },
+      },
+    })
+    expect(frenchWedding.t.htmlLang).toBe('fr')
+    expect(frenchWedding.t.skipIntro).toBe('Toucher pour passer')
+    expect(frenchWedding.t.calendar.button).toBe('Ajouter au calendrier')
+    expect(frenchWedding.longDate.toLowerCase()).toContain('juin')
   })
 
   it('validates active wedding configuration in wedding.config.ts', () => {

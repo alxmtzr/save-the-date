@@ -38,8 +38,9 @@ function Unit({ value, label, pad }: { value: number; label: string; pad: number
 
 export function Countdown() {
   const { days, hours, minutes, seconds, done } = useCountdown(wedding.countdownTarget)
+  const { countdown: t } = wedding.t
 
-  if (done) return <p className={styles.done}>Heute ist der große Tag ♥</p>
+  if (done) return <p className={styles.done}>{t.todayMessage}</p>
 
   return (
     <div className={styles.wrapper}>
@@ -47,15 +48,17 @@ export function Countdown() {
         className={styles.grid}
         role="timer"
         aria-live="off"
-        aria-label={`Noch ${days} Tage bis zur Hochzeit`}
+        aria-label={t.ariaLabel(days)}
       >
-        <Unit value={days} label="Tage" pad={1} />
-        <Unit value={hours} label="Stunden" pad={2} />
-        <Unit value={minutes} label="Minuten" pad={2} />
-        <Unit value={seconds} label="Sekunden" pad={2} />
+        <Unit value={days} label={t.days} pad={1} />
+        <Unit value={hours} label={t.hours} pad={2} />
+        <Unit value={minutes} label={t.minutes} pad={2} />
+        <Unit value={seconds} label={t.seconds} pad={2} />
       </div>
       <p className={styles.caption}>
-        bis wir <span className={styles.yes}>Ja</span> sagen
+        {t.captionPrefix}
+        <span className={styles.yes}>{t.captionHighlight}</span>
+        {t.captionSuffix}
       </p>
     </div>
   )

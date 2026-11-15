@@ -57,6 +57,7 @@ function weddingConfigPlugin(): Plugin {
     },
     transformIndexHtml(html) {
       return html
+        .replaceAll('__HTML_LANG__', escapeXml(wedding.t.htmlLang))
         .replaceAll('__META_TITLE__', escapeXml(wedding.meta.title))
         .replaceAll('__META_DESCRIPTION__', escapeXml(wedding.meta.description))
         .replaceAll('__OG_TITLE__', escapeXml(wedding.meta.ogTitle))

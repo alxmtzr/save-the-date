@@ -2,13 +2,13 @@
 
 A modern, minimalist single-page **Save the Date** website built with **Vite, React 19, TypeScript, and Motion**, ready to deploy on **GitHub Pages**.
 
-Every variable—including couple names, wedding date, countdown target, **photo file path**, calendar invite (`save-the-date.ics`), HTML `<meta>` tags, and Open Graph link preview (`og-image.jpg`)—is configured in a single root configuration file ([`wedding.config.ts`](wedding.config.ts)), with a ready-to-copy template in [`wedding.config.example.ts`](wedding.config.example.ts).
+Every variable—including **language (`locale: 'de' | 'en' | ...`)**, couple names, wedding date, countdown target, **photo file path**, calendar invite (`save-the-date.ics`), HTML `<meta>` tags, and Open Graph link preview (`og-image.jpg`)—is configured in a single root configuration file ([`wedding.config.ts`](wedding.config.ts)), with a ready-to-copy template in [`wedding.config.template.ts`](wedding.config.template.ts). Nothing is hardcoded in the application code.
 
 ---
 
 ## Preview
 
-*(Shown with the placeholder configuration from [`wedding.config.example.ts`](wedding.config.example.ts): **Emma & Noah · June 17, 2028**)*
+*(Shown with the placeholder configuration from [`wedding.config.template.ts`](wedding.config.template.ts): **Emma & Noah · June 17, 2028**)*
 
 ### Desktop (Split Layout)
 
@@ -30,7 +30,8 @@ Automatically generated at build time with the configured names and date:
 
 ## Features
 
-- **Single Config File (Including Image Path):** Set names, date, countdown timestamp, venue, and image path in [`wedding.config.ts`](wedding.config.ts). Use [`wedding.config.example.ts`](wedding.config.example.ts) as a clean starting template.
+- **Zero Hardcoded Data (`wedding.config.ts`):** Set language (`locale`), names, date, countdown timestamp, venue, and image path in [`wedding.config.ts`](wedding.config.ts). Use [`wedding.config.template.ts`](wedding.config.template.ts) as a clean starting template.
+- **Built-in & Extensible i18n (`de` / `en` + Custom Languages):** Ships with full **German (`de`)** and **English (`en`)** translations, automatic `Intl.DateTimeFormat` date localization, localized calendar invites, and `<html lang="...">` injection. Easily extensible to any language via [`src/i18n/locales.ts`](src/i18n/locales.ts) or inline `translations` overrides in `wedding.config.ts`.
 - **Calligraphic Hand-Drawn Intro:** Variable-width nib strokes drawn via animated SVG masks with crossing ribbons, an open heart cleft, and your custom names & date inside. Tap anywhere to skip, or click the small heart divider on the main page to replay anytime. Respects `prefers-reduced-motion`.
 - **Responsive Editorial Layout:** Full-bleed vertical fade on mobile (`< 900px`) and a 50/50 split screen on desktop (`≥ 900px`).
 - **Build-Time Image Optimization:** Uses `vite-imagetools` to automatically generate responsive `AVIF`, `WebP`, and `JPEG` `srcset` variants (`640w`, `960w`, `1280w`, `1500w`) for the image configured in `wedding.config.ts`.
@@ -44,43 +45,47 @@ Automatically generated at build time with the configured names and date:
 
 ## Reusing This Template for Your Own Wedding
 
-### 1. Copy the Example Config
+### 1. Copy the Template to `wedding.config.ts`
 
-Start from [`wedding.config.example.ts`](wedding.config.example.ts) and edit [`wedding.config.ts`](wedding.config.ts):
+Copy [`wedding.config.template.ts`](wedding.config.template.ts) (removing the `.template` suffix) to [`wedding.config.ts`](wedding.config.ts):
 
 ```bash
-cp wedding.config.example.ts wedding.config.ts
+cp wedding.config.template.ts wedding.config.ts
 ```
 
-### 2. Add Your Photo & Edit [`wedding.config.ts`](wedding.config.ts)
+### 2. Add Your Photo & Configure [`wedding.config.ts`](wedding.config.ts)
 
-Place your photo in `src/assets/` (for example `src/assets/my-photo.jpg`, recommended portrait resolution: `1200 × 1600 px` or higher) and configure all variables in [`wedding.config.ts`](wedding.config.ts):
+Place your photo in `src/assets/` (for example `src/assets/my-photo.jpg`, recommended portrait resolution: `1200 × 1600 px` or higher) and edit [`wedding.config.ts`](wedding.config.ts):
 
 ```ts
 import { defineWedding } from './src/weddingSchema.ts'
 
 export default defineWedding({
+  locale: 'en', // 'de' (German) or 'en' (English), or any custom locale
   names: ['Emma', 'Noah'],
   date: '2028-06-17',
   countdownTarget: '2028-06-17T00:00:00+02:00',
   image: 'src/assets/sample-couple.jpg',
   photoPosition: '50% 35%', // CSS object-position to keep faces centered
-  location: undefined,      // e.g. 'Munich' — displays locationFallback when undefined
-  locationFallback: 'Einladung folgt',
-  title: 'Hochzeit von Emma & Noah',
-  details: 'Save the Date! Die Einladung mit allen Details folgt.',
+  location: undefined,      // e.g. 'Munich' — displays localized fallback when undefined
   icsFileName: 'save-the-date.ics',
 })
 ```
 
-Changing `wedding.config.ts` automatically updates:
-- The hero photo (including responsive `AVIF`/`WebP`/`JPEG` build optimization), headline, formatted date, and `alt` text
-- The calligraphic heart intro animation (`names` and `DD · MM · YY` date)
-- The countdown timer target
-- Google Calendar, Outlook, and Apple Calendar / `.ics` (`save-the-date.ics`) invites
-- HTML `<title>`, `<meta name="description">`, Open Graph tags, and the generated `og-image.jpg` link preview image
+### 3. Language & i18n Customization
 
-*(Optional)* To customize colors, adjust the CSS custom properties in [`src/styles/global.css`](src/styles/global.css).
+- **Switch between German and English:** Set `locale: 'de'` or `locale: 'en'` in [`wedding.config.ts`](wedding.config.ts). All UI labels (countdown units, *"bis wir Ja sagen"* / *"until we say I do"*, calendar menu, skip button, accessibility labels), the long date format (*"17. Juni 2028"* vs. *"June 17, 2028"*), and calendar/Open Graph defaults switch automatically.
+- **Override individual strings inline:** Pass a `translations` object in `wedding.config.ts` to customize any phrase without editing component files:
+  ```ts
+  translations: {
+    countdown: {
+      captionPrefix: 'until we say ',
+      captionHighlight: 'Yes',
+      captionSuffix: '!',
+    },
+  }
+  ```
+- **Add a new language:** Add a dictionary in [`src/i18n/locales.ts`](src/i18n/locales.ts) (or call `registerLocale('fr', { ... })`) and set `locale: 'fr'` in `wedding.config.ts`.
 
 ---
 

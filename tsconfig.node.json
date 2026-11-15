@@ -22,9 +22,10 @@
   "include": [
     "vite.config.ts",
     "wedding.config.ts",
-    "wedding.config.example.ts",
+    "wedding.config.template.ts",
     "src/config.ts",
     "src/weddingSchema.ts",
+    "src/i18n/locales.ts",
     "src/lib/calendar.ts",
     "src/components/heartPaths.ts"
   ]

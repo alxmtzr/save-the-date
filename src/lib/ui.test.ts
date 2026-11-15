@@ -150,7 +150,7 @@ describe('Multi-Device UI & Responsive Layout Suite', () => {
       // Trigger intro replay via the heart button if not currently open
       await cdp.eval(`
         if (!document.querySelector('svg[viewBox="0 0 380 340"]')) {
-          document.querySelector('button[aria-label*="Herz-Animation"]')?.click();
+          document.querySelector('button[aria-label=${JSON.stringify(wedding.t.replayIntroAriaLabel)}]')?.click();
         }
       `)
       await sleep(150)
@@ -163,7 +163,7 @@ describe('Multi-Device UI & Responsive Layout Suite', () => {
         textContent: string
       }>(`(() => {
         const svg = document.querySelector('svg[viewBox="0 0 380 340"]');
-        const skip = Array.from(document.querySelectorAll('span')).find(s => s.textContent?.includes('Überspringen'));
+        const skip = Array.from(document.querySelectorAll('span')).find(s => s.textContent?.includes(${JSON.stringify(wedding.t.skipIntro)}));
         if (!svg || !skip) return { hasSvg: false, heartFitsViewport: false, skipFitsViewport: false, noOverlapWithSkip: false, textContent: '' };
         const sr = svg.getBoundingClientRect();
         const kr = skip.getBoundingClientRect();
