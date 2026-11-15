@@ -3,7 +3,7 @@ import type { Wedding } from '../config.ts'
 /** "2027-09-25" -> "20270925" */
 const compactDate = (isoDate: string) => isoDate.replaceAll('-', '')
 
-/** Folgetag eines ISO-Datums; ganztägige Termine enden exklusiv am nächsten Tag. */
+/** Next calendar day of an ISO date; all-day calendar events use an exclusive end date. */
 export function nextDay(isoDate: string): string {
   const d = new Date(`${isoDate}T00:00:00Z`)
   d.setUTCDate(d.getUTCDate() + 1)
@@ -35,7 +35,7 @@ export function outlookCalendarUrl(w: Wedding): string {
   return `https://outlook.live.com/calendar/0/action/compose?${params}`
 }
 
-/** Escaping für TEXT-Werte nach RFC 5545 §3.3.11 */
+/** Escapes TEXT values according to RFC 5545 §3.3.11 */
 function escapeText(value: string): string {
   return value
     .replaceAll('\\', '\\\\')
@@ -44,7 +44,7 @@ function escapeText(value: string): string {
     .replace(/\r?\n/g, '\\n')
 }
 
-/** Faltet Zeilen auf max. 75 Oktette (RFC 5545 §3.1), ohne UTF-8-Zeichen zu zerteilen. */
+/** Folds lines to at most 75 octets (RFC 5545 §3.1) without splitting multi-byte UTF-8 characters. */
 function foldLine(line: string): string {
   const encoder = new TextEncoder()
   const parts: string[] = []
@@ -52,7 +52,7 @@ function foldLine(line: string): string {
   let bytes = 0
   for (const char of line) {
     const size = encoder.encode(char).length
-    const limit = parts.length === 0 ? 75 : 74 // Folgezeilen beginnen mit einem Leerzeichen
+    const limit = parts.length === 0 ? 75 : 74 // continuation lines start with a single space
     if (bytes + size > limit) {
       parts.push(current)
       current = ''
@@ -68,10 +68,11 @@ function foldLine(line: string): string {
 const utcStamp = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
 
 export function buildIcs(w: Wedding, now: Date = new Date()): string {
+  const prodOwner = `${w.names[0]} & ${w.names[1]}`
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Chiara & Alex//Save the Date//DE',
+    `PRODID:-//${escapeText(prodOwner)}//Save the Date//DE`,
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

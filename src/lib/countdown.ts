@@ -15,7 +15,7 @@ export function remainingSeconds(target: number, now: number): number {
 export function msUntilNextSecond(target: number, now: number): number {
   const diff = target - now
   if (diff <= 0) return 1000
-  // Exakt bis zum nächsten Sekundenwechsel + 16ms Puffer gegen verfrühte Timer-Aufrufe
+  // Align to the next second boundary + 16ms safety margin against early timer firing
   return (diff % 1000) + 16
 }
 

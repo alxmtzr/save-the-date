@@ -27,7 +27,7 @@ function Unit({ value, label, pad }: { value: number; label: string; pad: number
     <div className={styles.unit}>
       <span className={styles.value}>
         {digits.map((d, i) => (
-          // Index von rechts als Key, damit Stellen stabil bleiben, wenn sich die Länge ändert
+          // Key by place value from right so digits stay stable when total length changes
           <Digit key={digits.length - i} value={d} />
         ))}
       </span>

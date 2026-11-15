@@ -16,9 +16,6 @@ const item: Variants = {
 }
 
 const SIZES = '(min-width: 900px) 50vw, 100vw'
-const longDate = new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'long', year: 'numeric' }).format(
-  new Date(`${wedding.date}T12:00:00`),
-)
 
 export function SaveTheDate({
   ready,
@@ -42,7 +39,8 @@ export function SaveTheDate({
             width={couple.img.w}
             height={couple.img.h}
             sizes={SIZES}
-            alt={`${first} und ${second} umarmen sich lachend im Sonnenuntergang auf einer Wiese`}
+            alt={wedding.photoAlt}
+            style={{ objectPosition: wedding.photoPosition }}
             fetchPriority="high"
             decoding="async"
             initial={{ scale: 1.08 }}
@@ -78,7 +76,7 @@ export function SaveTheDate({
         </m.div>
 
         <m.p variants={item} className={styles.date}>
-          <time dateTime={wedding.date}>{longDate}</time>
+          <time dateTime={wedding.date}>{wedding.longDate}</time>
         </m.p>
 
         <m.div variants={item} className={styles.block}>
@@ -90,7 +88,7 @@ export function SaveTheDate({
         </m.div>
 
         <m.p variants={item} className={styles.note}>
-          {wedding.location ?? 'Einladung folgt'}
+          {wedding.location ?? wedding.locationFallback}
         </m.p>
       </m.section>
     </main>

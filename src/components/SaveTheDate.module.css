@@ -2,7 +2,7 @@
   min-height: 100svh;
 }
 
-/* ---------- Foto ---------- */
+/* ---------- Photo ---------- */
 .photo {
   position: relative;
   margin: 0;
@@ -20,7 +20,7 @@
   transform-origin: 60% 40%;
 }
 
-/* weicher Übergang vom Foto in den Hintergrund */
+/* Soft fade from the photo into the page background */
 .photo::after {
   content: '';
   position: absolute;
@@ -30,7 +30,7 @@
   pointer-events: none;
 }
 
-/* ---------- Inhalt ---------- */
+/* ---------- Content ---------- */
 .content {
   position: relative;
   display: flex;
@@ -129,7 +129,7 @@
   color: var(--muted);
 }
 
-/* ---------- Desktop: Split-Layout ---------- */
+/* ---------- Desktop: split layout ---------- */
 @media (min-width: 900px) {
   .page {
     display: grid;

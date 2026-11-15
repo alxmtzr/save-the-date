@@ -1,5 +1,6 @@
 import { m } from 'motion/react'
 import { useEffect } from 'react'
+import { wedding } from '../config.ts'
 import styles from './HeartIntro.module.css'
 import { HEART_STROKES } from './heartPaths.ts'
 
@@ -88,7 +89,7 @@ export function HeartIntro({ onDone }: { onDone: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.15, duration: 0.75, ease: 'easeOut' }}
         >
-          Chiara &amp; Alex
+          {wedding.coupleLabel}
         </m.text>
 
         <m.text
@@ -99,7 +100,7 @@ export function HeartIntro({ onDone }: { onDone: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.35, duration: 0.8, ease: 'easeOut' }}
         >
-          25 · 09 · 27
+          {wedding.shortDate}
         </m.text>
       </m.svg>
 
