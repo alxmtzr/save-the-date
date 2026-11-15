@@ -23,21 +23,21 @@ export function HeartIntro({ onDone }: { onDone: () => void }) {
       <m.svg
         className={styles.heart}
         viewBox="0 0 380 340"
+        shapeRendering="geometricPrecision"
         aria-hidden="true"
-        initial={{ scale: 0.97, rotate: -1.5 }}
+        initial={{ scale: 1 }}
         animate={{
-          scale: [0.97, 1, 1, 1.035, 1],
-          rotate: [-1.5, 0, 0, 0.4, 0],
+          scale: [1, 1, 1, 1.028, 1],
         }}
         exit={{
-          scale: 1.18,
+          scale: 1.12,
           opacity: 0,
           filter: 'blur(6px)',
           transition: { duration: 0.75, ease: 'easeInOut' },
         }}
         transition={{
           duration: 3.1,
-          times: [0, 0.55, 0.72, 0.86, 1],
+          times: [0, 0.65, 0.75, 0.88, 1],
           ease: 'easeInOut',
         }}
       >
