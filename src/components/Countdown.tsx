@@ -6,13 +6,13 @@ import styles from './Countdown.module.css'
 function Digit({ value }: { value: string }) {
   return (
     <span className={styles.digit}>
-      <AnimatePresence initial={false} mode="popLayout">
+      <AnimatePresence initial={false}>
         <m.span
           key={value}
-          initial={{ y: '90%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '-90%', opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ y: '85%', opacity: 0 }}
+          animate={{ y: '0%', opacity: 1 }}
+          exit={{ y: '-85%', opacity: 0 }}
+          transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
         >
           {value}
         </m.span>
@@ -54,7 +54,9 @@ export function Countdown() {
         <Unit value={minutes} label="Minuten" pad={2} />
         <Unit value={seconds} label="Sekunden" pad={2} />
       </div>
-      <p className={styles.caption}>bis wir Ja sagen</p>
+      <p className={styles.caption}>
+        bis wir <span className={styles.yes}>Ja</span> sagen
+      </p>
     </div>
   )
 }

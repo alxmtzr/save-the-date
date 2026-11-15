@@ -8,8 +8,18 @@ export interface CountdownParts {
   done: boolean
 }
 
-export function countdownParts(target: number, now: number): CountdownParts {
-  const totalSeconds = Math.max(0, Math.floor((target - now) / 1000))
+export function remainingSeconds(target: number, now: number): number {
+  return Math.max(0, Math.floor((target - now) / 1000))
+}
+
+export function msUntilNextSecond(target: number, now: number): number {
+  const diff = target - now
+  if (diff <= 0) return 1000
+  // Exakt bis zum nächsten Sekundenwechsel + 16ms Puffer gegen verfrühte Timer-Aufrufe
+  return (diff % 1000) + 16
+}
+
+export function secondsToParts(totalSeconds: number): CountdownParts {
   return {
     days: Math.floor(totalSeconds / 86_400),
     hours: Math.floor((totalSeconds % 86_400) / 3_600),
@@ -19,21 +29,27 @@ export function countdownParts(target: number, now: number): CountdownParts {
   }
 }
 
+export function countdownParts(target: number, now: number): CountdownParts {
+  return secondsToParts(remainingSeconds(target, now))
+}
+
 export function useCountdown(targetIso: string): CountdownParts {
   const target = Date.parse(targetIso)
-  const [now, setNow] = useState(() => Date.now())
+  const [totalSeconds, setTotalSeconds] = useState(() => remainingSeconds(target, Date.now()))
 
   useEffect(() => {
-    let timer: number
+    let timeoutId: number
     const tick = () => {
-      const current = Date.now()
-      setNow(current)
-      // auf die nächste volle Sekunde ausrichten, damit die Anzeige nicht driftet
-      timer = window.setTimeout(tick, 1000 - (current % 1000))
+      const now = Date.now()
+      const next = remainingSeconds(target, now)
+      setTotalSeconds(next)
+      if (next > 0) {
+        timeoutId = window.setTimeout(tick, msUntilNextSecond(target, now))
+      }
     }
-    timer = window.setTimeout(tick, 1000 - (Date.now() % 1000))
-    return () => window.clearTimeout(timer)
-  }, [])
+    timeoutId = window.setTimeout(tick, msUntilNextSecond(target, Date.now()))
+    return () => window.clearTimeout(timeoutId)
+  }, [target])
 
-  return countdownParts(target, now)
+  return secondsToParts(totalSeconds)
 }

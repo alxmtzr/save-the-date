@@ -1,16 +1,9 @@
 import { m } from 'motion/react'
 import { useEffect } from 'react'
 import styles from './HeartIntro.module.css'
+import { HEART_STROKES } from './heartPaths.ts'
 
-// Zwei Herzhälften, die gleichzeitig von der Spitze nach oben gezeichnet werden.
-const LEFT = 'M100 168 C 60 136, 12 104, 12 62 C 12 32, 34 12, 60 12 C 80 12, 94 24, 100 40'
-const RIGHT = 'M100 168 C 140 136, 188 104, 188 62 C 188 32, 166 12, 140 12 C 120 12, 106 24, 100 40'
-const FULL =
-  'M100 168 C 60 136, 12 104, 12 62 C 12 32, 34 12, 60 12 C 80 12, 94 24, 100 40 ' +
-  'C 106 24, 120 12, 140 12 C 166 12, 188 32, 188 62 C 188 104, 140 136, 100 168 Z'
-
-const DRAW = { duration: 1.6, ease: [0.65, 0, 0.35, 1] } as const
-const TOTAL_MS = 3000
+const TOTAL_MS = 3400
 
 export function HeartIntro({ onDone }: { onDone: () => void }) {
   useEffect(() => {
@@ -24,45 +17,92 @@ export function HeartIntro({ onDone }: { onDone: () => void }) {
       onClick={onDone}
       role="presentation"
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8, ease: 'easeInOut' }}
+      transition={{ duration: 0.85, ease: 'easeInOut' }}
     >
       <m.svg
         className={styles.heart}
-        viewBox="0 0 200 180"
+        viewBox="0 0 380 340"
         aria-hidden="true"
-        initial={{ scale: 1 }}
-        animate={{ scale: [1, 1, 1.07, 1, 1.04, 1] }}
-        exit={{ scale: 1.5, opacity: 0, filter: 'blur(6px)' }}
-        transition={{ duration: 2.6, times: [0, 0.75, 0.83, 0.9, 0.95, 1], ease: 'easeInOut' }}
+        initial={{ scale: 0.97, rotate: -1.5 }}
+        animate={{
+          scale: [0.97, 1, 1, 1.035, 1],
+          rotate: [-1.5, 0, 0, 0.4, 0],
+        }}
+        exit={{ scale: 1.18, opacity: 0, filter: 'blur(6px)' }}
+        transition={{
+          duration: 3.1,
+          times: [0, 0.55, 0.72, 0.86, 1],
+          ease: 'easeInOut',
+        }}
       >
-        <m.path
-          d={FULL}
-          className={styles.fill}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.7, duration: 0.9 }}
+        <defs>
+          <radialGradient id="heart-glow" cx="50%" cy="48%" r="44%">
+            <stop offset="0%" stopColor="var(--accent-soft)" stopOpacity="0.4" />
+            <stop offset="65%" stopColor="var(--accent-soft)" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="var(--bg)" stopOpacity="0" />
+          </radialGradient>
+          {HEART_STROKES.map((s) => (
+            <mask key={s.id} id={`mask-${s.id}`} maskUnits="userSpaceOnUse">
+              <m.path
+                d={s.center}
+                fill="none"
+                stroke="#fff"
+                strokeWidth={s.maskWidth}
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  pathLength: { delay: s.delay, duration: s.duration, ease: [0.42, 0, 0.2, 1] },
+                  opacity: { delay: s.delay, duration: 0.04 },
+                }}
+              />
+            </mask>
+          ))}
+        </defs>
+
+        <m.ellipse
+          cx="190"
+          cy="158"
+          rx="145"
+          ry="125"
+          fill="url(#heart-glow)"
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 1.4, ease: 'easeOut' }}
         />
-        {[LEFT, RIGHT].map((d) => (
-          <m.path
-            key={d}
-            d={d}
-            className={styles.stroke}
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={DRAW}
+
+        {HEART_STROKES.map((s) => (
+          <path
+            key={s.id}
+            d={s.ribbon}
+            mask={`url(#mask-${s.id})`}
+            className={styles[s.variant]}
           />
         ))}
+
         <m.text
-          x="100"
-          y="92"
-          className={styles.date}
+          x="190"
+          y="146"
+          className={styles.names}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.7 }}
+          transition={{ delay: 1.15, duration: 0.75, ease: 'easeOut' }}
+        >
+          Chiara &amp; Alex
+        </m.text>
+
+        <m.text
+          x="190"
+          y="182"
+          className={styles.date}
+          initial={{ opacity: 0, y: 7 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.35, duration: 0.8, ease: 'easeOut' }}
         >
           25 · 09 · 27
         </m.text>
       </m.svg>
+
       <m.span
         className={styles.skip}
         initial={{ opacity: 0 }}
