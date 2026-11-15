@@ -194,14 +194,28 @@ describe('End-to-End Functional & Multi-Device UI Suite', () => {
     cdp = new CdpSession()
     await cdp.connect(page.webSocketDebuggerUrl)
     await cdp.send('Page.enable')
-  }, 30_000)
+
+    // Warm up Vite dependency pre-bundling and vite-imagetools AVIF/WebP/JPG generation
+    // so subsequent navigations in tests are instantaneous even on cold CI runners.
+    await cdp.send('Page.navigate', { url: baseUrl })
+    for (let i = 0; i < 250; i++) {
+      const ready = await cdp.eval<boolean>(
+        `Boolean(document.querySelector('main img')?.complete && document.querySelector('h1'))`,
+      )
+      if (ready) break
+      await sleep(100)
+    }
+  }, 45_000)
 
   afterAll(async () => {
     cdp?.close()
-    chrome?.kill()
+    if (chrome && chrome.exitCode === null) {
+      chrome.kill('SIGKILL')
+      await new Promise((r) => chrome.once('exit', r))
+    }
     await server?.close()
     if (userDataDir) {
-      rmSync(userDataDir, { recursive: true, force: true })
+      rmSync(userDataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 })
     }
   })
 
